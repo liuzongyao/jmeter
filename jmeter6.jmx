@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.2.1">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <collectionProp name="TestPlan.thread_groups"/>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="Argument List" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <stringProp name="TestPlan.comments"></stringProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell 预处理程序" enabled="true">
+        <boolProp name="resetInterpreter">false</boolProp>
+        <stringProp name="parameters"></stringProp>
+        <stringProp name="filename"></stringProp>
+        <stringProp name="script">
+public static String getEnv(String env_name,String default_value){
+    String env=System.getenv(env_name);
+    if (env==null){
+        return default_value;
+    }else{
+        return env;
+    }
+}
+
+public static void setVar(String var_name,String var_value){
+    String tmp_value=vars.get(var_name);
+    if(tmp_value==null){
+        vars.put(var_name,var_value);
+        log.info(var_name+&quot;: &quot;+var_value);
+    }
+}
+
+String var_seted=vars.get(&quot;VAR_SETED&quot;);
+if(var_seted==null){
+    String API_TYPE=getEnv(&quot;API_TYPE&quot;,&quot;https&quot;); // 访问集群的协议
+    setVar(&quot;API_TYPE&quot;,API_TYPE);
+
+    String API_IP=getEnv(&quot;API_IP&quot;,&quot;int.alauda.cn&quot;);  // 集群地址
+    setVar(&quot;API_IP&quot;,API_IP);
+
+    String account=getEnv(&quot;ACCOUNT&quot;,&quot;admin@cpaas.io&quot;);
+    if(account.contains(&quot;/&quot;)){
+        String[] auth_account=account.split(&quot;/&quot;);
+        setVar(&quot;AUTH&quot;,auth_account[0]);
+        setVar(&quot;ACCOUNT&quot;,auth_account[1]);
+    }else{
+    	    setVar(&quot;AUTH&quot;,&quot;local&quot;);
+    	    setVar(&quot;ACCOUNT&quot;,account);
+    }
+
+    String password=getEnv(&quot;PASSWORD&quot;,&quot;password&quot;);
+    setVar(&quot;PASSWORD&quot;,password);
+
+    String PRO_NAME=getEnv(&quot;PRO_NAME&quot;,&quot;aa-liuzongyao&quot;);  //项目名称
+    setVar(&quot;PRO_NAME&quot;,PRO_NAME);
+
+    String TOKEN=getEnv(&quot;TOKEN&quot;,&quot;eyJhbGciOiJSUzI1NiIsImtpZCI6Ijc0OTFlMGZkMTMwZTJjNzI3NjcwMjI3ZjEwYmYyYjc3NTU4NzM5YWQifQ.eyJpc3MiOiJodHRwczovL2ludC5hbGF1ZGEuY24vZGV4Iiwic3ViIjoiQ2lRd09HRTROamcwWWkxa1lqZzRMVFJpTnpNdE9UQmhPUzB6WTJReE5qWXhaalUwTmpZU0JXeHZZMkZzIiwiYXVkIjoiYWxhdWRhLWF1dGgiLCJleHAiOjE1ODM5OTI5ODYsImlhdCI6MTU4MzkwNjU4Niwibm9uY2UiOiJhbGF1ZGEtY29uc29sZSIsImF0X2hhc2giOiI2MzlNYlJSczVtVW9STkRvcGU3Vm1RIiwiZW1haWwiOiJhZG1pbkBjcGFhcy5pbyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYW1lIjoiYWRtaW4iLCJleHQiOnsiaXNfYWRtaW4iOnRydWUsImNvbm5faWQiOiJsb2NhbCJ9fQ.WnCOj83REHOVHBDVJr1c0LXnIdkHaDfygPbOy6RNJ-GcfFBLa4iaow6rTQNV25K0EcGlmc63Ta8mapsLVoyja4WaYWPxvNvjP-W_uS38x3w6pH4dCmmo6cF5xTaoI-KV_lXHe_YY8FL2UXR1ArgihScTkgWhHgtyRTgh-wR9A0vd8T1HbNYEoMrCefqMT-2hgGksgqLj5gsmzcbOKmsWnnTN9-qLhBIPWBBg8vqqR2ZPjifGn7_b99Nd82NrmAXzRuo21szNUuQE6-LGKXDgzCj5xS2u3fznFSyCY7ypvuKPP5m7j3b-9SwD1aKhAewNqFCWiToXw38hWloIZB_l7g&quot;);
+    setVar(&quot;TOKEN&quot;,TOKEN);  // 访问集群的token信息
+       
+    String JENKINS_NAME=getEnv(&quot;JENKINS_NAME&quot;,&quot;jenkins&quot;);  // 集成jenkins的名称
+    setVar(&quot;JENKINS_NAME&quot;,JENKINS_NAME);
+    String JENKINS_SECRET_NAME=getEnv(&quot;JENKINS_SECRET_NAME&quot;,&quot;jenkins-backup-int&quot;); // jenkins的平台凭据名称
+    setVar(&quot;JENKINS_SECRET_NAME&quot;,JENKINS_SECRET_NAME);
+    String JENKINS_BIND_NAME=getEnv(&quot;JENKINS_BIND_NAME&quot;,&quot;jenkins&quot;); // 绑定jenkins到项目的绑定名称
+    setVar(&quot;JENKINS_BIND_NAME&quot;,JENKINS_BIND_NAME);
+    String JENKINS_IP=getEnv(&quot;JENKINS_IP&quot;,&quot;http://192.168.17.10:32001&quot;);   // jenkins的地址信息
+    setVar(&quot;JENKINS_IP&quot;,JENKINS_IP);
+    String JENKINS_USERNAME=getEnv(&quot;JENKINS_USERNAME&quot;,&quot;admin&quot;);  //jenkins的用户名
+    setVar(&quot;JENKINS_USERNAME&quot;,JENKINS_USERNAME);
+    String JENKINS_TOKEN=getEnv(&quot;JENKINS_TOKEN&quot;,&quot;119f1f3faa4cd110670ae86908715b62b2&quot;); //jenkins的token信息
+    setVar(&quot;JENKINS_TOKEN&quot;,JENKINS_TOKEN);
+
+    String GITLAB_NAME=getEnv(&quot;GITLAB_NAME&quot;,&quot;gitlab-staging&quot;);  //集成jenkins的工具名称
+    setVar(&quot;GITLAB_NAME&quot;,GITLAB_NAME);
+    String GITLAB_SECRET_NAME=getEnv(&quot;GITLAB_SECRET_NAME&quot;,&quot;gitlab-staging&quot;); // gitlab的平台凭据名称
+    setVar(&quot;GITLAB_SECRET_NAME&quot;,GITLAB_SECRET_NAME);
+    String GITLAB_BIND_NAME=getEnv(&quot;GITLAB_BIND_NAME&quot;,&quot;gitlab-staging&quot;); // 绑定gitlab的绑定名称
+    setVar(&quot;GITLAB_BIND_NAME&quot;,GITLAB_BIND_NAME);
+    String GITLAB_IP=getEnv(&quot;GITLAB_IP&quot;,&quot;http://10.0.128.241:31101&quot;); // gitlab地址信息
+    setVar(&quot;GITLAB_IP&quot;,GITLAB_IP);
+    String GITLAB_USERNAME=getEnv(&quot;GITLAB_USERNAME&quot;,&quot;root&quot;);  // 登陆gitlab的用户名
+    setVar(&quot;GITLAB_USERNAME&quot;,GITLAB_USERNAME);
+    String GITLAB_TOKEN=getEnv(&quot;GITLAB_TOKEN&quot;,&quot;4UKPXz-6AU9ZYr6ujKMH&quot;); // gitlab的token信息
+    setVar(&quot;GITLAB_TOKEN&quot;,GITLAB_TOKEN);
+    String GITLAB_ACCOUNT=getEnv(&quot;GITLAB_ACCOUNT&quot;,&quot;root&quot;); // gitlab组织信息 通常和用户名一样
+    setVar(&quot;GITLAB_ACCOUNT&quot;,GITLAB_ACCOUNT);
+    String GITLAB_REPO=getEnv(&quot;GITLAB_REPO&quot;,&quot;go-test-private&quot;); //代码仓库的名称
+    setVar(&quot;GITLAB_REPO&quot;,GITLAB_REPO);
+    
+
+    String HARBOR_NAME=getEnv(&quot;HARBOR_NAME&quot;,&quot;harbor-staging&quot;); // habror的工具名称
+    setVar(&quot;HARBOR_NAME&quot;,HARBOR_NAME);
+    String HARBOR_SECRET_NAME=getEnv(&quot;HARBOR_SECRET_NAME&quot;,&quot;harbor-staging&quot;); // habror的平台凭据
+    setVar(&quot;HARBOR_SECRET_NAME&quot;,HARBOR_SECRET_NAME);
+    String HARBOR_BIND_NAME=getEnv(&quot;HARBOR_BIND_NAME&quot;,&quot;harbor-staging&quot;); //绑定habror的名称
+    setVar(&quot;HARBOR_BIND_NAME&quot;,HARBOR_BIND_NAME);
+    String HARBOR_IP=getEnv(&quot;HARBOR_IP&quot;,&quot;http://10.0.128.241:31104&quot;); //habor的地址
+    setVar(&quot;HARBOR_IP&quot;,HARBOR_IP);
+    String HARBOR_USERNAME=getEnv(&quot;HARBOR_USERNAME&quot;,&quot;admin&quot;); //harbor的用户名
+    setVar(&quot;HARBOR_USERNAME&quot;,HARBOR_USERNAME);
+    String HARBOR_PASSWORD=getEnv(&quot;HARBOR_PASSWORD&quot;,&quot;Harbor12345&quot;); //harbor的密码
+    setVar(&quot;HARBOR_PASSWORD&quot;,HARBOR_PASSWORD);
+    String HARBOR_PATH=getEnv(&quot;HARBOR_PATH&quot;,&quot;10.0.128.241:31104&quot;); // harbor的路径信息 是地址信息 但是不带http://
+    setVar(&quot;HARBOR_PATH&quot;,HARBOR_PATH);
+    String HARBOR_PROJECT=getEnv(&quot;HARBOR_PROJECT&quot;,&quot;e2e-automation&quot;);  //habror对应的项目名称
+    setVar(&quot;HARBOR_PROJECT&quot;,HARBOR_PROJECT);
+    String HARBOR_REPO=getEnv(&quot;HARBOR_REPO&quot;,&quot;go&quot;); // habor里的镜像仓库名称
+    setVar(&quot;HARBOR_REPO&quot;,HARBOR_REPO);
+
+    String time_out=getEnv(&quot;time_out&quot;,&quot;300&quot;); // 超时次数
+    setVar(&quot;time_out&quot;,time_out);
+
+    String SLEEP=getEnv(&quot;SLEEP&quot;,&quot;10&quot;);
+    int b = Integer.parseInt(SLEEP);
+    int sleep = b*1000;
+    String ss = Integer.toString(sleep);
+    setVar(&quot;SLEEP&quot;,ss);
+    
+    setVar(&quot;VAR_SETED&quot;,&quot;true&quot;);
+    
+}</stringProp>
+      </BeanShellPreProcessor>
+      <hashTree/>
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP请求默认值-proxy" enabled="true">
+        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+          <collectionProp name="Arguments.arguments"/>
+        </elementProp>
+        <stringProp name="HTTPSampler.domain"></stringProp>
+        <stringProp name="HTTPSampler.port"></stringProp>
+        <stringProp name="HTTPSampler.protocol"></stringProp>
+        <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+        <stringProp name="HTTPSampler.path"></stringProp>
+        <stringProp name="HTTPSampler.concurrentPool">6</stringProp>
+        <stringProp name="HTTPSampler.proxyHost">139.186.2.80</stringProp>
+        <stringProp name="HTTPSampler.proxyPort">37491</stringProp>
+        <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+        <stringProp name="HTTPSampler.response_timeout"></stringProp>
+      </ConfigTestElement>
+      <hashTree/>
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP请求默认值-noproxy" enabled="false">
+        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+          <collectionProp name="Arguments.arguments"/>
+        </elementProp>
+        <stringProp name="HTTPSampler.domain"></stringProp>
+        <stringProp name="HTTPSampler.port"></stringProp>
+        <stringProp name="HTTPSampler.protocol"></stringProp>
+        <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+        <stringProp name="HTTPSampler.path"></stringProp>
+        <stringProp name="HTTPSampler.concurrentPool">6</stringProp>
+        <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+        <stringProp name="HTTPSampler.response_timeout"></stringProp>
+      </ConfigTestElement>
+      <hashTree/>
+      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP信息头管理器" enabled="true">
+        <collectionProp name="HeaderManager.headers">
+          <elementProp name="" elementType="Header">
+            <stringProp name="Header.name">Content-Type</stringProp>
+            <stringProp name="Header.value">application/json</stringProp>
+          </elementProp>
+          <elementProp name="" elementType="Header">
+            <stringProp name="Header.name">Authorization</stringProp>
+            <stringProp name="Header.value">Bearer ${TOKEN}</stringProp>
+          </elementProp>
+        </collectionProp>
+      </HeaderManager>
+      <hashTree/>
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp线程组" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="循环控制器" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </SetupThreadGroup>
+      <hashTree>
+        <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="BeanShell 取样器" enabled="true">
+          <stringProp name="BeanShellSampler.query">String cases=vars.get(&quot;RUN_CASES&quot;);
+props.put(&quot;TOKEN&quot;,vars.get(&quot;TOKEN&quot;));
+props.put(&quot;USERS&quot;,&quot;2&quot;);
+props.put(&quot;RUN_TIME&quot;,&quot;${__env(RUN_TIME,,60)}&quot;);</stringProp>
+          <stringProp name="BeanShellSampler.filename"></stringProp>
+          <stringProp name="BeanShellSampler.parameters"></stringProp>
+          <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+        </BeanShellSampler>
+        <hashTree/>
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Transaction Controller" enabled="true">
+          <boolProp name="TransactionController.includeTimers">false</boolProp>
+          <boolProp name="TransactionController.parent">false</boolProp>
+        </TransactionController>
+        <hashTree>
+          <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="循环控制器" enabled="true">
+            <boolProp name="LoopController.continue_forever">true</boolProp>
+            <stringProp name="LoopController.loops">2</stringProp>
+          </LoopController>
+          <hashTree>
+            <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="计数器" enabled="true">
+              <stringProp name="CounterConfig.start">1</stringProp>
+              <stringProp name="CounterConfig.end">100</stringProp>
+              <stringProp name="CounterConfig.incr">1</stringProp>
+              <stringProp name="CounterConfig.name">index</stringProp>
+              <stringProp name="CounterConfig.format"></stringProp>
+              <boolProp name="CounterConfig.per_user">false</boolProp>
+            </CounterConfig>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP请求" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
+	&quot;kind&quot;: &quot;Pipelineconfig&quot;,&#xd;
+	&quot;objectMeta&quot;: {&#xd;
+		&quot;annotations&quot;: {&#xd;
+			&quot;alauda.io/displayName&quot;: &quot;&quot;&#xd;
+		},&#xd;
+		&quot;name&quot;: &quot;${PRO_NAME}-pipeline-${index}&quot;,&#xd;
+		&quot;namespace&quot;: &quot;${PRO_NAME}&quot;,&#xd;
+		&quot;labels&quot;: {&#xd;
+			&quot;app&quot;: &quot;&quot;&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;spec&quot;: {&#xd;
+		&quot;runPolicy&quot;: &quot;Serial&quot;,&#xd;
+		&quot;jenkinsBinding&quot;: {&#xd;
+			&quot;name&quot;: &quot;${JENKINS_BIND_NAME}&quot;&#xd;
+		},&#xd;
+		&quot;source&quot;: {&#xd;
+			&quot;sourceType&quot;: &quot;GIT&quot;,&#xd;
+			&quot;git&quot;: {&#xd;
+				&quot;uri&quot;: &quot;http://10.0.128.241:31101/root/go-test-public.git&quot;,&#xd;
+				&quot;ref&quot;: &quot;master&quot;&#xd;
+			},&#xd;
+			&quot;secret&quot;: null&#xd;
+		},&#xd;
+		&quot;strategy&quot;: {&#xd;
+			&quot;jenkins&quot;: {&#xd;
+				&quot;jenkinsfile&quot;: &quot;&quot;,&#xd;
+				&quot;jenkinsfilePath&quot;: &quot;Jenkinsfile&quot;&#xd;
+			}&#xd;
+		},&#xd;
+		&quot;triggers&quot;: [{&#xd;
+			&quot;cron&quot;: {&#xd;
+				&quot;enabled&quot;: false,&#xd;
+				&quot;rule&quot;: &quot;&quot;,&#xd;
+				&quot;schedule&quot;: {&#xd;
+					&quot;weeks&quot;: [&quot;mon&quot;, &quot;tue&quot;, &quot;wed&quot;, &quot;thu&quot;, &quot;fri&quot;, &quot;sat&quot;, &quot;sun&quot;],&#xd;
+					&quot;times&quot;: [&quot;00:00&quot;]&#xd;
+				}&#xd;
+			},&#xd;
+			&quot;type&quot;: &quot;cron&quot;&#xd;
+		}]&#xd;
+	}&#xd;
+}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/devops/api/v1/pipelineconfig/${PRO_NAME}</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="setup create" enabled="true">
+          <boolProp name="TransactionController.includeTimers">false</boolProp>
+          <boolProp name="TransactionController.parent">false</boolProp>
+        </TransactionController>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP信息头管理器" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">authorization</stringProp>
+                <stringProp name="Header.value">Bearer ${__P(TOKEN,)}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="循环控制器" enabled="true">
+            <boolProp name="LoopController.continue_forever">true</boolProp>
+            <stringProp name="LoopController.loops">${__P(USERS,)}</stringProp>
+          </LoopController>
+          <hashTree>
+            <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="创建流水线的条数" enabled="true">
+              <stringProp name="CounterConfig.start">1</stringProp>
+              <stringProp name="CounterConfig.end">100</stringProp>
+              <stringProp name="CounterConfig.incr">1</stringProp>
+              <stringProp name="CounterConfig.name">index</stringProp>
+              <stringProp name="CounterConfig.format"></stringProp>
+              <boolProp name="CounterConfig.per_user">false</boolProp>
+            </CounterConfig>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="setup_add_pipelines" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
+	&quot;kind&quot;: &quot;Pipelineconfig&quot;,&#xd;
+	&quot;objectMeta&quot;: {&#xd;
+		&quot;annotations&quot;: {&#xd;
+			&quot;alauda.io/displayName&quot;: &quot;&quot;&#xd;
+		},&#xd;
+		&quot;name&quot;: &quot;${PRO_NAME}-pipeline-${index}&quot;,&#xd;
+		&quot;namespace&quot;: &quot;${PRO_NAME}&quot;,&#xd;
+		&quot;labels&quot;: {&#xd;
+			&quot;app&quot;: &quot;&quot;&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;spec&quot;: {&#xd;
+		&quot;runPolicy&quot;: &quot;Serial&quot;,&#xd;
+		&quot;jenkinsBinding&quot;: {&#xd;
+			&quot;name&quot;: &quot;${JENKINS_BIND_NAME}&quot;&#xd;
+		},&#xd;
+		&quot;source&quot;: {&#xd;
+			&quot;sourceType&quot;: &quot;GIT&quot;,&#xd;
+			&quot;git&quot;: {&#xd;
+				&quot;uri&quot;: &quot;http://10.0.128.241:31101/root/go-test-public.git&quot;,&#xd;
+				&quot;ref&quot;: &quot;master&quot;&#xd;
+			},&#xd;
+			&quot;secret&quot;: null&#xd;
+		},&#xd;
+		&quot;strategy&quot;: {&#xd;
+			&quot;jenkins&quot;: {&#xd;
+				&quot;jenkinsfile&quot;: &quot;&quot;,&#xd;
+				&quot;jenkinsfilePath&quot;: &quot;Jenkinsfile&quot;&#xd;
+			}&#xd;
+		},&#xd;
+		&quot;triggers&quot;: [{&#xd;
+			&quot;cron&quot;: {&#xd;
+				&quot;enabled&quot;: false,&#xd;
+				&quot;rule&quot;: &quot;&quot;,&#xd;
+				&quot;schedule&quot;: {&#xd;
+					&quot;weeks&quot;: [&quot;mon&quot;, &quot;tue&quot;, &quot;wed&quot;, &quot;thu&quot;, &quot;fri&quot;, &quot;sat&quot;, &quot;sun&quot;],&#xd;
+					&quot;times&quot;: [&quot;00:00&quot;]&#xd;
+				}&#xd;
+			},&#xd;
+			&quot;type&quot;: &quot;cron&quot;&#xd;
+		}]&#xd;
+	}&#xd;
+}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/devops/api/v1/pipelineconfig/${PRO_NAME}</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="察看结果树" enabled="true">
+                <boolProp name="ResultCollector.error_logging">false</boolProp>
+                <objProp>
+                  <name>saveConfig</name>
+                  <value class="SampleSaveConfiguration">
+                    <time>true</time>
+                    <latency>true</latency>
+                    <timestamp>true</timestamp>
+                    <success>true</success>
+                    <label>true</label>
+                    <code>true</code>
+                    <message>true</message>
+                    <threadName>true</threadName>
+                    <dataType>true</dataType>
+                    <encoding>false</encoding>
+                    <assertions>true</assertions>
+                    <subresults>true</subresults>
+                    <responseData>false</responseData>
+                    <samplerData>false</samplerData>
+                    <xml>false</xml>
+                    <fieldNames>true</fieldNames>
+                    <responseHeaders>false</responseHeaders>
+                    <requestHeaders>false</requestHeaders>
+                    <responseDataOnError>false</responseDataOnError>
+                    <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                    <assertionsResultsToSave>0</assertionsResultsToSave>
+                    <bytes>true</bytes>
+                    <sentBytes>true</sentBytes>
+                    <threadCounts>true</threadCounts>
+                    <idleTime>true</idleTime>
+                    <connectTime>true</connectTime>
+                  </value>
+                </objProp>
+                <stringProp name="filename"></stringProp>
+              </ResultCollector>
+              <hashTree/>
+            </hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="首次获取流水线执行状态" enabled="false">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/devops/api/v1/pipelineconfig/${PRO_NAME}/${PRO_NAME}-pipeline-${index}</stringProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">status</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$.status.phase</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+                <boolProp name="JSONPostProcessor.compute_concat">true</boolProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="true">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+                <stringProp name="script">vars.put(&apos;get_status_times&apos;,&apos;0&apos;);</stringProp>
+              </JSR223PostProcessor>
+              <hashTree/>
+            </hashTree>
+            <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="While Controller" enabled="false">
+              <stringProp name="WhileController.condition">${__javaScript(&quot;${status}&quot; != &quot;Ready&quot; &amp;&amp; ${get_status_times} &lt; ${time_out})} </stringProp>
+            </WhileController>
+            <hashTree>
+              <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="固定定时器" enabled="true">
+                <stringProp name="ConstantTimer.delay">2000</stringProp>
+              </ConstantTimer>
+              <hashTree/>
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="循环请求流水线执行结果" enabled="true">
+                <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+                  <collectionProp name="Arguments.arguments"/>
+                </elementProp>
+                <stringProp name="HTTPSampler.domain"></stringProp>
+                <stringProp name="HTTPSampler.port"></stringProp>
+                <stringProp name="HTTPSampler.protocol"></stringProp>
+                <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                <stringProp name="HTTPSampler.path">/devops/api/v1/pipelineconfig/${PRO_NAME}/${PRO_NAME}-pipeline-${index}</stringProp>
+                <stringProp name="HTTPSampler.method">GET</stringProp>
+                <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+                <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              </HTTPSamplerProxy>
+              <hashTree>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">status</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.status.phase</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+                  <boolProp name="JSONPostProcessor.compute_concat">true</boolProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+                  <boolProp name="resetInterpreter">false</boolProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="script">Integer get_status_times = Integer.parseInt(vars.get(&quot;get_status_times&quot;));
+
+get_status_times+=1;
+
+vars.put(&quot;get_status_times&quot;,get_status_times.toString());</stringProp>
+                </BeanShellPostProcessor>
+                <hashTree/>
+              </hashTree>
+            </hashTree>
+          </hashTree>
+          <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Test Action" enabled="false">
+            <intProp name="ActionProcessor.action">1</intProp>
+            <intProp name="ActionProcessor.target">0</intProp>
+            <stringProp name="ActionProcessor.duration">6000</stringProp>
+          </TestAction>
+          <hashTree/>
+          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="察看结果树" enabled="true">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>false</xml>
+                <fieldNames>true</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+                <sentBytes>true</sentBytes>
+                <threadCounts>true</threadCounts>
+                <idleTime>true</idleTime>
+                <connectTime>true</connectTime>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="创建两条流水线" enabled="true">
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">0</stringProp>
+        <longProp name="ThreadGroup.start_time">1211836533000</longProp>
+        <longProp name="ThreadGroup.end_time">1211836533000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <stringProp name="LoopController.continue_forever">true</stringProp>
+          <stringProp name="LoopController.loops">5</stringProp>
+        </LoopController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="News Page" enabled="false">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/auth/v1/${__threadGroupName}</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            <stringProp name="HTTPSampler.implementation">Java</stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP请求" enabled="false">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">http://httpbin.org/anything</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP请求" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">https://int.alauda.cn/devops/api/v1/pipelineconfig/aa-liuzongyao</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            <stringProp name="HTTPSampler.proxyHost">139.186.2.80</stringProp>
+            <stringProp name="HTTPSampler.proxyPort">37491</stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+        <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="File Reporter" enabled="false">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+            </value>
+          </objProp>
+          <stringProp name="filename">loop-test.dat</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="察看结果树" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
