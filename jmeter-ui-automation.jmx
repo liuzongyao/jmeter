@@ -36,7 +36,7 @@ public static void setVar(String var_name,String var_value){
 
 String var_seted=vars.get(&quot;VAR_SETED&quot;);
 if(var_seted==null){
-    String API_TYPE=getEnv(&quot;API_TYPE&quot;,&quot;https&quot;); // 访问集群的协议
+    String API_TYPE=getEnv(&quot;API_TYPE&quot;,&quot;https&quot;); // 访问集群的协
     setVar(&quot;API_TYPE&quot;,API_TYPE);
 
     String API_IP=getEnv(&quot;API_IP&quot;,&quot;int.alauda.cn&quot;);  // 集群地址
